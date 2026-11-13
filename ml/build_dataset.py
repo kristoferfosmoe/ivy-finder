@@ -25,7 +25,7 @@ from PIL import Image, ImageOps
 
 from common import (
     CLASSES, DATASET_DIR, DATASET_INDEX, FIELD_DIR, FIELD_MANIFEST,
-    HEDERA_LABELS, INAT_DIR, INAT_MANIFEST,
+    HEDERA_LABELS, INAT_DIR, INAT_MANIFEST, NON_PLANT_FOLDERS,
 )
 
 SHORT_SIDE = 320  # stored size; training crops 224 px squares out of this
@@ -60,6 +60,8 @@ def collect():
                 rejected += 1
                 continue
             label = SORT_TO_CLASS[choice]
+        elif row["folder"] in NON_PLANT_FOLDERS:
+            label = "no_vegetation"
         else:
             label = "other_vegetation"
         group = "inat_" + row["observation_id"]

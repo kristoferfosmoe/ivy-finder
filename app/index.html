@@ -32,9 +32,12 @@
       <video id="video" playsinline muted autoplay></video>
       <div id="guide" aria-hidden="true"></div>
       <div id="flash" aria-hidden="true"></div>
+      <button id="alert" type="button" hidden></button>
+      <div id="meter" aria-hidden="true" hidden><div id="meter-fill"></div><div id="meter-mark"></div></div>
     </div>
 
     <p id="gps" class="status">Waiting for GPS…</p>
+    <p id="detector" class="status" role="status"></p>
     <p id="message" class="status" role="status"></p>
 
     <section class="controls">
@@ -72,6 +75,7 @@
   </main>
 
   <script src="../vendor/supabase-2.119.0.js"></script>
+  <script src="../vendor/tf-4.22.0.min.js" defer></script>
   <script src="../config.js"></script>
   <script type="module" src="app.js"></script>
 </body>

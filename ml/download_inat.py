@@ -1,6 +1,6 @@
 """Download openly licensed iNaturalist photos of ivy and its look-alikes.
 
-    python ml/download_inat.py              # everything, about 8,000 photos
+    python ml/download_inat.py              # everything, about 9,300 photos
     python ml/download_inat.py --scale 0.1  # a tenth of that, to try it out
     python ml/download_inat.py --only hedera
 
@@ -35,6 +35,7 @@ MAX_PER_OBSERVER = 30  # stops one prolific person dominating a class
 
 # folder, scientific names, number of photos.
 # "hedera" is sorted by hand afterwards; every other folder is a negative.
+# A source with several names shares its count between them.
 SOURCES = [
     ("hedera", ["Hedera"], 3000),
     ("wintercreeper", ["Euonymus fortunei"], 600),
@@ -51,6 +52,13 @@ SOURCES = [
     ("trees", ["Quercus", "Acer", "Fagus grandifolia", "Liriodendron tulipifera", "Prunus serotina"], 600),
     # Any other vascular plant, so the model sees ordinary greenery too.
     ("plants", ["Tracheophyta"], 800),
+    # Mushrooms are mostly photographed on leaf litter and logs: woodland
+    # floor without ivy.
+    ("fungi", ["Fungi"], 300),
+    # iNaturalist has no photos of plain pavement or walls, so animals stand in
+    # for "not a plant": birds against sky, insects on walls, fish, shells.
+    # build_dataset.py files this folder under no_vegetation.
+    ("animals", ["Aves", "Insecta", "Arachnida", "Mollusca", "Actinopterygii", "Mammalia", "Reptilia"], 1000),
 ]
 
 MANIFEST_FIELDS = [
@@ -75,16 +83,13 @@ def api_get(path, **params):
 
 
 def resolve_taxon(name):
-    """Return the iNaturalist id of the plant with exactly this scientific name."""
+    """Return the iNaturalist id of the taxon with exactly this scientific name."""
     results = api_get("taxa", q=name, per_page=30)["results"]
-    # The same name can exist in another kingdom (there is an animal genus
-    # called Hedera), so keep plants only and take the most observed.
-    matches = [
-        taxon for taxon in results
-        if taxon["name"].lower() == name.lower() and taxon.get("iconic_taxon_name") == "Plantae"
-    ]
+    # The same name can exist in two kingdoms (there is an obscure animal genus
+    # called Hedera), so take the most observed match.
+    matches = [taxon for taxon in results if taxon["name"].lower() == name.lower()]
     if not matches:
-        raise SystemExit(f"No plant named {name!r} found on iNaturalist")
+        raise SystemExit(f"Nothing named {name!r} found on iNaturalist")
     return max(matches, key=lambda taxon: taxon.get("observations_count", 0))["id"]
 
 
@@ -210,7 +215,7 @@ def main():
 
     print("Looking up species...")
     taxon_ids = {folder: [resolve_taxon(name) for name in names] for folder, names, _ in SOURCES}
-    specific_ids = [i for folder, ids in taxon_ids.items() if folder != "plants" for i in ids]
+    specific_ids = [i for folder, ids in taxon_ids.items() if folder not in ("plants", "fungi", "animals") for i in ids]
 
     manifest = read_manifest()
     for folder, _, count in SOURCES:

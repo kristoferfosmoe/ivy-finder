@@ -1,5 +1,6 @@
 import { db, BUCKET, requireLogin, signOut } from '../shared/client.js';
 import * as queue from './queue.js';
+import { loadDetector } from './detector.js';
 
 const cfg = window.IVY_CONFIG;
 const $ = (id) => document.getElementById(id);
@@ -19,6 +20,7 @@ const settings = loadSettings();
 let user = null;
 let fix = null;
 let syncing = false;
+let detector = null;
 
 $('signout').addEventListener('click', signOut);
 requireLogin(start);
@@ -30,17 +32,24 @@ function start(signedInUser) {
   watchLocation();
   refreshPending();
   sync();
+  startDetector();
 
   shutter.addEventListener('click', capture);
   pendingButton.addEventListener('click', sync);
   window.addEventListener('online', sync);
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState !== 'visible') return;
+    if (document.visibilityState !== 'visible') {
+      detector?.stop();
+      showDetection(null);
+      return;
+    }
     // iOS ends the camera track when the page is backgrounded.
     const track = video.srcObject?.getVideoTracks()[0];
     if (!track || track.readyState === 'ended') startCamera();
     sync();
+    runDetector();
   });
+  $('alert').addEventListener('click', applySuggestion);
 }
 
 // ---------- Capture settings ----------
@@ -139,6 +148,75 @@ function currentFix() {
   return fix && Date.now() - fix.timestamp <= MAX_FIX_AGE_MS ? fix : null;
 }
 
+// ---------- Live detection ----------
+
+async function startDetector() {
+  const line = $('detector');
+  if (!cfg.modelVersion) {
+    line.textContent = 'Detector off: no model set in config.js.';
+    return;
+  }
+  line.textContent = 'Loading detector…';
+  try {
+    detector = await loadDetector(cfg.modelVersion);
+    $('meter-mark').style.left = `${detector.threshold * 100}%`;
+    $('meter').hidden = false;
+    line.textContent = `Detector ${cfg.modelVersion} running.`;
+    runDetector();
+  } catch (error) {
+    line.textContent = `Detector unavailable: ${error.message}`;
+  }
+}
+
+function runDetector() {
+  if (!detector) return;
+  detector.start(video, showDetection).catch((error) => {
+    detector.stop();
+    showDetection(null);
+    $('detector').textContent = `Detector stopped: ${error.message}`;
+  });
+}
+
+let wasAlerting = false;
+
+function showDetection(state) {
+  const alerting = Boolean(state?.alert);
+  $('meter-fill').style.width = `${Math.round((state?.ivyScore ?? 0) * 100)}%`;
+  $('viewfinder').classList.toggle('alerting', alerting);
+  $('alert').hidden = !alerting;
+  if (alerting) {
+    $('alert').textContent = `Ivy likely: ${state.ivyClass}. Tap to tag.`;
+    // A short buzz when ivy first comes into view (Android only; iOS has no vibration).
+    if (!wasAlerting) navigator.vibrate?.(150);
+  }
+  wasAlerting = alerting;
+}
+
+// Tapping the alert sets the tags to what the model sees. It is never applied
+// automatically, so a false alarm cannot silently mislabel a photo.
+function applySuggestion() {
+  const state = detector?.state;
+  if (!state) return;
+  settings.subject = 'ivy';
+  settings.growth_form = state.ivyClass;
+  saveSettings();
+  renderControls();
+}
+
+// What the model thought at the moment of capture, stored with the photo so
+// its mistakes can be found later and used for retraining.
+function detectionFields(isIvy) {
+  const state = detector?.state;
+  if (!state) return {};
+  return {
+    model_version: state.version,
+    model_class: state.topClass,
+    model_score: Math.round(state.ivyScore * 1000) / 1000,
+    // Only an alert asks the user a question; their tag is the answer.
+    user_confirmed: state.alert ? isIvy : null,
+  };
+}
+
 // ---------- Capture ----------
 
 async function capture() {
@@ -167,6 +245,7 @@ async function capture() {
       lon: position?.coords.longitude ?? null,
       accuracy_m: position?.coords.accuracy ?? null,
       photo_path: `${user.id}/${id}.jpg`,
+      ...detectionFields(isIvy),
     };
     await queue.add({ id, row, blob });
     $('notes').value = '';

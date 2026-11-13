@@ -136,6 +136,9 @@ function popup(row) {
   if (row.vines_cut) fact('Treatment', 'Vines cut');
   fact('Taken', new Date(row.captured_at).toLocaleString());
   fact('GPS', row.accuracy_m == null ? null : `±${Math.round(row.accuracy_m)} m`);
+  if (row.model_version) {
+    fact('Model', `ivy score ${Number(row.model_score).toFixed(2)} (${row.model_version})`);
+  }
   fact('Notes', row.notes);
   root.append(facts);
 

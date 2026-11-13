@@ -17,9 +17,25 @@ Supabase stores the observations and photos.
 
 ## Status
 
-Built: capture, upload, map, speed test, and the dataset and training pipeline.
-Not built yet: live detection on the video feed, which needs a trained model.
-`ml/README.md` is the step-by-step guide to producing that model.
+Built: capture, upload, map, speed test, the dataset and training pipeline,
+and live ivy detection on the camera feed using model `v1`.
+
+`v1` was trained on downloaded photos only. `ml/README.md` explains how to
+train a better one with your own field photos.
+
+## Live detection
+
+The capture app classifies the camera's centre square about five times a
+second. A bar along the bottom of the viewfinder shows the ivy score, with a
+white tick at the alert threshold. When the score stays above it, a banner
+says whether the ivy looks climbing or on the ground; tapping the banner sets
+the tags to match. Tags are never changed automatically.
+
+Every photo is saved with the model's version and score at the moment of
+capture, so its mistakes can be found later and used for retraining.
+
+`modelVersion` in `config.js` selects the model folder under `app/model/`.
+Set it to `null` to turn detection off.
 
 ## Setup
 

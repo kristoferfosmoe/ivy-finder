@@ -1,0 +1,131 @@
+{
+ "version": "v1",
+ "trained_on": "2026-11-13",
+ "classes": [
+  "ivy_climbing",
+  "ivy_ground",
+  "other_vegetation",
+  "no_vegetation"
+ ],
+ "input_size": 224,
+ "ivy_threshold": 0.6,
+ "photos": {
+  "train": 7882,
+  "val": 1386,
+  "test": 0
+ },
+ "scores": {
+  "val": {
+   "photos": 1386,
+   "accuracy": 0.8722943722943723,
+   "ivy_precision": 0.841726618705036,
+   "ivy_recall": 0.9069767441860465,
+   "confusion": [
+    [
+     113,
+     9,
+     4,
+     1
+    ],
+    [
+     16,
+     228,
+     16,
+     0
+    ],
+    [
+     53,
+     37,
+     728,
+     21
+    ],
+    [
+     2,
+     1,
+     17,
+     140
+    ]
+   ],
+   "alert_rate": {
+    "ivy_climbing": {
+     "photos": 127,
+     "rate": 0.9291338582677166
+    },
+    "ivy_ground": {
+     "photos": 260,
+     "rate": 0.8961538461538462
+    },
+    "other_vegetation": {
+     "photos": 839,
+     "rate": 0.07628128724672228
+    },
+    "no_vegetation": {
+     "photos": 160,
+     "rate": 0.0125
+    }
+   },
+   "false_alarms_by_kind": {
+    "inat: animals": {
+     "photos": 160,
+     "alerts": 2
+    },
+    "inat: bittersweet": {
+     "photos": 25,
+     "alerts": 0
+    },
+    "inat: boston_ivy": {
+     "photos": 40,
+     "alerts": 12
+    },
+    "inat: fungi": {
+     "photos": 38,
+     "alerts": 0
+    },
+    "inat: grape": {
+     "photos": 29,
+     "alerts": 1
+    },
+    "inat: ground_ivy": {
+     "photos": 40,
+     "alerts": 7
+    },
+    "inat: honeysuckle": {
+     "photos": 44,
+     "alerts": 1
+    },
+    "inat: moss": {
+     "photos": 32,
+     "alerts": 0
+    },
+    "inat: pachysandra": {
+     "photos": 51,
+     "alerts": 2
+    },
+    "inat: periwinkle": {
+     "photos": 66,
+     "alerts": 5
+    },
+    "inat: plants": {
+     "photos": 121,
+     "alerts": 3
+    },
+    "inat: poison_ivy": {
+     "photos": 76,
+     "alerts": 5
+    },
+    "inat: trees": {
+     "photos": 93,
+     "alerts": 4
+    },
+    "inat: virginia_creeper": {
+     "photos": 81,
+     "alerts": 4
+    },
+    "inat: wintercreeper": {
+     "photos": 103,
+     "alerts": 20
+    }
+   }
+  }
+ }
+}

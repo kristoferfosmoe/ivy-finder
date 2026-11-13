@@ -6,6 +6,10 @@ from pathlib import Path
 CLASSES = ["ivy_climbing", "ivy_ground", "other_vegetation", "no_vegetation"]
 IVY_CLASSES = ["ivy_climbing", "ivy_ground"]
 
+# Downloaded folders that hold no plants; every other negative folder counts
+# as other_vegetation.
+NON_PLANT_FOLDERS = {"animals"}
+
 INPUT_SIZE = 224  # pixels, square; must match the browser's resize
 
 REPO = Path(__file__).resolve().parent.parent

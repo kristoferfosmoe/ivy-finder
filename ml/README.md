@@ -73,10 +73,12 @@ Activate the environment again each time you open a new terminal.
 python ml/download_inat.py
 ```
 
-Fetches about 8,000 photos from iNaturalist taken within 500 km of
-Pittsburgh: 3,000 of ivy and 5,000 of look-alikes, trees, moss and ordinary
-plants. Allow 20 to 40 minutes and 2 GB of disk. You can stop it and run it
-again; it carries on where it left off.
+Fetches about 9,300 photos from iNaturalist taken within 500 km of
+Pittsburgh: 3,000 of ivy, 5,000 of look-alikes, trees, moss and ordinary
+plants, 300 of fungi (woodland floor) and 1,000 of animals. The animals stand
+in for "no plants", since iNaturalist has no photos of bare pavement or walls.
+Allow 30 to 45 minutes and 2 GB of disk. You can stop it and run it again; it
+carries on where it left off.
 
 To try the whole pipeline quickly first, add `--scale 0.1` for a tenth of the
 photos.
@@ -177,6 +179,21 @@ Two or three rounds usually make the biggest difference.
 - A model that looks excellent on validation but poor on the field test has
   learned what downloaded photos look like, not what your camera sees. The
   cure is more field photos.
+
+## How v1 was made
+
+The first model, `app/model/v1/`, was trained on downloaded photos only, with
+no field photos. Of its 3,000 ivy photos, 900 were sorted by eye into
+climbing, ground and reject. The other 2,100 were labelled climbing or ground
+by a helper model that agreed with the by-eye labels 88% of the time, so about
+one in eight of those carries the wrong growth form. Sorting all 3,000 by hand
+with `sort_photos.py` before training v2 would remove that noise.
+
+On 1,386 held-out downloaded photos, v1 catches 91% of ivy and 84% of its
+alerts are correct, at an alert threshold of 0.60. Its false alarms come
+mostly from Boston ivy (30% of those photos raise an alert), wintercreeper
+(19%) and ground ivy (18%). These figures are for tidy downloaded photos;
+there is no field test yet.
 
 ## What to expect
 
