@@ -43,6 +43,10 @@ create index observations_captured_at_idx on public.observations (captured_at de
 
 alter table public.observations enable row level security;
 
+-- Stated explicitly rather than relying on the project's default grants. The
+-- policies below still decide which rows each signed-in user can touch.
+grant select, insert, update, delete on public.observations to authenticated;
+
 create policy "signed-in users read observations"
   on public.observations for select to authenticated
   using (true);
