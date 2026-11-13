@@ -12,14 +12,14 @@ Supabase stores the observations and photos.
 | `dashboard/` | Map of observations, status updates, CSV and GeoJSON export |
 | `spike/` | Speed test: how fast a phone runs the detector's model architecture |
 | `supabase/migrations/` | Database schema and access rules |
-| `ml/` | Model export to the browser format |
+| `ml/` | Dataset and training pipeline; see `ml/README.md` |
 | `shared/`, `vendor/`, `config.js` | Styles, sign-in, pinned libraries, project settings |
 
 ## Status
 
-Built: capture, upload, map, speed test, model export.
-Not built yet: the ivy model itself and live detection on the video feed.
-The capture app is the tool for collecting the training photos that model needs.
+Built: capture, upload, map, speed test, and the dataset and training pipeline.
+Not built yet: live detection on the video feed, which needs a trained model.
+`ml/README.md` is the step-by-step guide to producing that model.
 
 ## Setup
 
@@ -47,33 +47,19 @@ when asked.
 
 ## Collecting training photos
 
-The capture app remembers its settings between shots, so a run of similar
-photos is one tap each. Every photo is tagged with what it shows:
+The capture app doubles as the tool for collecting training photos. What to
+shoot, and how many, is in `ml/README.md`.
 
-- **Ivy**, with growth form (climbing, ground, both) and, for climbing ivy, how
-  far up the trunk it reaches. These are the monitoring records and need a GPS
-  fix.
-- **Look-alike**, **Trunk, no ivy**, **Other plants**, **No plants**. These are
-  negative examples for training and are hidden from the map by default.
-
-The dashed square in the viewfinder is the part of the frame the model will
-see, so frame the subject inside it.
-
-What to aim for:
-
-- Climbing ivy on at least 30 to 50 different trees, at walking distance, in
-  varied light. Include thick leafless stems where the foliage is high up.
-- Trunks without ivy: bare, mossy, lichen-covered, and carrying other vines.
-- Look-alikes common in western Pennsylvania. Wintercreeper is the important
-  one, because it is also evergreen and climbs trunks. Others: Virginia
-  creeper, poison ivy (hairy vine; photograph it, don't touch it), Boston ivy,
-  oriental bittersweet, wild grape, Japanese honeysuckle, periwinkle,
-  pachysandra, ground ivy.
+Look-alikes common in western Pennsylvania: wintercreeper is the important
+one, because it is also evergreen and climbs trunks. Others are Virginia
+creeper, poison ivy (hairy vine; photograph it, don't touch it), Boston ivy,
+oriental bittersweet, wild grape, Japanese honeysuckle, periwinkle,
+pachysandra and ground ivy.
 
 ## Model export
 
-`ml/export_tfjs.py` converts a Keras model to the format the site loads. See
-`ml/requirements.txt` for the pinned versions and the two-step install.
+`ml/export_tfjs.py` converts a Keras model to the format the site loads.
+`train.py` runs it automatically; this is how the speed test's model was made:
 
 ```bash
 python ml/export_tfjs.py --stock --out spike/model

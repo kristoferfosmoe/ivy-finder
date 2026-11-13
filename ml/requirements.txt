@@ -8,3 +8,4 @@
 # TensorFlow. export_tfjs.py works around the imports it leaves missing.
 tensorflow==2.21.0
 tf_keras==2.21.0
+pillow==13.0.0
