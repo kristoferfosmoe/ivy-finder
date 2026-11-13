@@ -1,0 +1,10 @@
+# Tested together on Python 3.13. Install in two steps:
+#
+#   pip install -r ml/requirements.txt
+#   pip install --no-deps tensorflowjs==4.22.0
+#
+# tensorflowjs is installed without its dependencies because it pins packages
+# (tensorflow-decision-forests, jax) that have no build matching this
+# TensorFlow. export_tfjs.py works around the imports it leaves missing.
+tensorflow==2.21.0
+tf_keras==2.21.0

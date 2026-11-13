@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ivy Finder speed test</title>
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body class="spike">
+  <header>
+    <h1>Speed test</h1>
+    <a href="../">Home</a>
+  </header>
+  <main>
+    <p>
+      Runs the same size of model the ivy detector will use, on this phone's camera.
+      Point it at everyday objects: the labels should make rough sense. Leave it
+      running for a minute, then copy the results.
+    </p>
+    <button id="start" type="button" class="primary">Start</button>
+    <video id="video" playsinline muted autoplay hidden></video>
+    <p id="rate" class="big" hidden></p>
+    <p id="labels" class="status"></p>
+    <pre id="results" hidden></pre>
+    <button id="copy" type="button" class="primary" hidden>Copy results</button>
+  </main>
+
+  <script src="../vendor/tf-4.22.0.min.js"></script>
+  <script type="module" src="spike.js"></script>
+</body>
+</html>

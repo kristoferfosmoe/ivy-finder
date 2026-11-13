@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ivy Finder map</title>
+  <link rel="stylesheet" href="../vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body class="dashboard">
+  <header>
+    <h1>Ivy map</h1>
+    <a href="../app/">Capture</a>
+    <button id="signout" class="link" type="button">Sign out</button>
+  </header>
+
+  <form id="login" class="card" hidden>
+    <fieldset>
+      <legend>Sign in</legend>
+      <label>Email <input name="email" type="email" autocomplete="username" required></label>
+      <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+      <button type="submit" class="primary">Sign in</button>
+    </fieldset>
+    <p class="error" role="alert"></p>
+  </form>
+
+  <main id="main" hidden>
+    <div class="toolbar">
+      <label>Show
+        <select id="filter-subject">
+          <option value="ivy">Ivy only</option>
+          <option value="all">Everything, including training photos</option>
+        </select>
+      </label>
+      <label>Growth
+        <select id="filter-growth">
+          <option value="">Any</option>
+          <option value="climbing">Climbing</option>
+          <option value="ground">Ground</option>
+          <option value="both">Both</option>
+        </select>
+      </label>
+      <label>Status
+        <select id="filter-status">
+          <option value="">Any</option>
+          <option value="reported">Reported</option>
+          <option value="verified">Verified</option>
+          <option value="treated">Treated</option>
+          <option value="removed">Removed</option>
+        </select>
+      </label>
+      <button id="export-csv" type="button">Export CSV</button>
+      <button id="export-geojson" type="button">Export GeoJSON</button>
+      <p id="summary" class="status" role="status"></p>
+    </div>
+    <div class="legend">
+      <span style="--dot:#b91c1c">Into canopy</span>
+      <span style="--dot:#ea580c">Mid-trunk</span>
+      <span style="--dot:#ca8a04">Climbing, base or height not set</span>
+      <span style="--dot:#2563eb">Ground only</span>
+      <span style="--dot:#6b7280">Not ivy</span>
+    </div>
+    <div id="map"></div>
+  </main>
+
+  <script src="../vendor/supabase-2.119.0.js"></script>
+  <script src="../vendor/leaflet/leaflet.js"></script>
+  <script src="../config.js"></script>
+  <script type="module" src="dashboard.js"></script>
+</body>
+</html>
